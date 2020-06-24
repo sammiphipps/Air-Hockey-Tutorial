@@ -45,10 +45,56 @@ window.addEventListener('mousemove', event => {
     player.y = event.y - h * .05
 })
 
+class Puck {
+    constructor() {
+        this.x = w / 2
+        this.y = h / 2
+        this.dx = 5
+        this.dy = 5
+    }
+
+    draw() {
+        ctx.beginPath()
+        ctx.arc(this.x, this.y, w * .04, 0, 2 * Math.PI)
+        ctx.fillStyle = "black"
+        ctx.fill()
+        ctx.stroke()
+    }
+
+    update() {
+        this.x += this.dx
+        this.y += this.dy
+
+        const a = Math.abs(this.x - player.x)
+        const b = Math.abs(this.y - player.y)
+        const c = Math.sqrt(a**2 + b**2)
+
+        if (this.x + w * .04 > w || this.x - w * .04 < 0){
+            this.dx *= -1
+        }
+
+        if (this.y + w * .04 > h || this.y - w * .04 < 0){
+            this.dy *= -1
+        }
+
+        if (c < w * .04 + w * .05){
+            player.dx === 0 ? this.dx *= -1 : this.dx += player.dx * .5
+            player.dy === 0 ? this.dy *= -1 : this.dy += player.dy * .5
+
+        }
+
+        Math.sign(this.dx) === 1 ? this.dx -= .1 : this.dx += .1
+        Math.sign(this.dy) === 1 ? this.dy -= .1 : this.dy += .1
+    }
+}
+
+const puck = new Puck()
+
 const animate = () => {
     ctx.clearRect(0, 0, w, h)
     board()
     player.draw()
+    puck.draw()
     requestAnimationFrame(animate)
 }
 
