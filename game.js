@@ -1,103 +1,128 @@
 const canvas = document.querySelector('#table')
-const w = canvas.width
-const h = canvas.height
+const boardWidth = canvas.width
+const boardHeight = canvas.height
 const ctx = canvas.getContext('2d')
 ctx.lineWidth = 2
 
 const board = () => {
     ctx.beginPath()
-    ctx.arc(w / 2, h / 2, w / 10, 0, 2 * Math.PI)
-    ctx.moveTo(0, h / 2)
-    ctx.lineTo(w, h / 2)
+    ctx.arc(boardWidth / 2, boardHeight / 2, boardWidth / 10, 0, 2 * Math.PI)
+    ctx.moveTo(0, boardHeight / 2)
+    ctx.lineTo(boardWidth, boardHeight / 2)
     ctx.stroke()
 }
+function Disc (radius, color) {
+    this.startingPosX = boardWidth / 2
+    this.startingPosY = boardHeight / 2
+    this.x = this.startingPosX
+    this.y = this.startingPosY
+    this.radius = radius
+    this.mass = 15
+    this.velocityX = 0
+    this.velocityY = 0
+    this.maxSpeed = 10
+    this.frictionX = 0.997
+    this.frictionY = 0.997
+    this.acceleration = 1
+    this.color = color
 
-class Player {
-    constructor() {
-        this.x = undefined
-        this.y = undefined
-        this.prevX = undefined
-        this.prevY = undefined
-        this.dx = undefined
-        this.dy = undefined
-    }
+    this.keepControllerInBoard = () => {
+        if (this.x > (boardWidth - this.radius) || this.x < this.radius) {
+            if (this.x < this.radius) {
+                this.velocityX = 2
+            } else {
+                this.velocityX = -2
+            }
+        }
 
-    draw(){
-        ctx.beginPath()
-        ctx.arc(this.x, this.y, w * .05, 0, 2 * Math.PI)
-        ctx.fillStyle = "red"
-        ctx.fill()
-        ctx.stroke()
-    }
+        if (this.y > (boardHeight - this.radius) || this.y < this.radius) {
+            if (this.y < this.radius){
+                this.velocityY = 2
+            } else {
+                this.velocityY = -2
+            }
+        }
 
-    update() {
-        this.dx = this.x - this.prevX
-        this.dy = this.y - this.prevY
-        this.prevX = this.x
-        this.prevY = this.y
+        if (controller.x > ((boardWidth / 2) - controller.radius) && controller.x < (boardWidth / 2)){
+            controller.velocityX = -3
+        }
+
+        if(controllerTwo.x > (boardWidth / 2) && controllerTwo.x < ((boardWidth / 2) + (controllerTwo.radius / 2))){
+            controllerTwo.velocityX = +3
+        }
+    } 
+
+    this.keepPuckInBoard = () => {
+        if (this.x > (boardWidth - this.radius) || this.x < this.radius) {
+            if (this.x > (boardWidth - this.radius)) {
+                this.x = boardWidth - this.radius
+            } else {
+                this.x = this.radius
+            }
+
+            if (this.y > (goalPosTop + puck.radius) && this.y < (goalPosTop + goalHeight) - puck.radius) {
+                puck = new Disc(boardWidth / 11, 'black')
+            } else {
+                this.velocityX = -this.velocityX
+            }
+        }
+
+        if (this.y > (boardHeight - this.radius) || this.y < this.radius) {
+            if (this.y > (boardHeight - this.radius)){
+                this.y = boardHeight - this.radius
+            } else {
+                this.y = this.radius
+            }
+
+            this.velocityY = -this.velocityY
+        }
     }
 }
 
-const player = new Player()
+const puck = new Disc(boardWidth / 11, 'black') 
 
-window.addEventListener('mousemove', event => {
-    player.x = event.x - window.innerWidth / 2 + w / 2
-    player.y = event.y - h * .05
-})
+console.log(puck)
+// class Player {
+//     constructor() {
+//         this.x = undefined
+//         this.y = undefined
+//         this.prevX = undefined
+//         this.prevY = undefined
+//         this.dx = undefined
+//         this.dy = undefined
+//     }
 
-class Puck {
-    constructor() {
-        this.x = w / 2
-        this.y = h / 2
-        this.dx = 5
-        this.dy = 5
-    }
+//     draw(){
+//         ctx.beginPath()
+//         ctx.arc(this.x, this.y, boardWidth * .05, 0, 2 * Math.PI)
+//         ctx.fillStyle = "red"
+//         ctx.fill()
+//         ctx.stroke()
+//     }
 
-    draw() {
-        ctx.beginPath()
-        ctx.arc(this.x, this.y, w * .04, 0, 2 * Math.PI)
-        ctx.fillStyle = "black"
-        ctx.fill()
-        ctx.stroke()
-    }
+//     update() {
+//         this.dx = this.x - this.prevX
+//         this.dy = this.y - this.prevY
+//         this.prevX = this.x
+//         this.prevY = this.y
+//     }
+// }
 
-    update() {
-        this.x += this.dx
-        this.y += this.dy
+// const player = new Player()
 
-        const a = Math.abs(this.x - player.x)
-        const b = Math.abs(this.y - player.y)
-        const c = Math.sqrt(a**2 + b**2)
+// window.addEventListener('mousemove', event => {
+//     player.x = event.x - window.innerWidth / 2 + w / 2
+//     player.y = event.y - h * .05
+// })
 
-        if (this.x + w * .04 > w || this.x - w * .04 < 0){
-            this.dx *= -1
-        }
+// const animate = () => {
+//     ctx.clearRect(0, 0, boardWidth, h)
+//     board()
+//     player.draw()
+//     requestAnimationFrame(animate)
+// }
 
-        if (this.y + w * .04 > h || this.y - w * .04 < 0){
-            this.dy *= -1
-        }
+// animate()
 
-        if (c < w * .04 + w * .05){
-            player.dx === 0 ? this.dx *= -1 : this.dx += player.dx * .5
-            player.dy === 0 ? this.dy *= -1 : this.dy += player.dy * .5
-
-        }
-
-        Math.sign(this.dx) === 1 ? this.dx -= .1 : this.dx += .1
-        Math.sign(this.dy) === 1 ? this.dy -= .1 : this.dy += .1
-    }
-}
-
-const puck = new Puck()
-
-const animate = () => {
-    ctx.clearRect(0, 0, w, h)
-    board()
-    player.draw()
-    puck.draw()
-    requestAnimationFrame(animate)
-}
-
-animate()
-
+board()
 
