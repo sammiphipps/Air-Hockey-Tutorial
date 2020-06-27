@@ -209,7 +209,7 @@ function Disc () {
     }
 
     this.computerPlayer = () => {        
-            if (puck.x > (boardCenterX - 30) && controllerTwo.x > (boardCenterX + controllerTwo.radius * 2)) {
+            if (puck.y > (boardCenterY - 30) && controllerTwo.y > (boardCenterY + controllerTwo.radius * 2)) {
                     if ((puck.x + puck.radius) < controllerTwo.x) {
                           controllerTwo.velocityX -= controllerTwo.acceleration;
                     } else {
@@ -236,7 +236,7 @@ function Disc () {
         
     }
 
-};
+}
 
 document.addEventListener('keydown', event => {
     moveController(event.keyCode)
