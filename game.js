@@ -4,14 +4,55 @@ const boardHeight = canvas.height
 const boardCenterX = boardWidth / 2
 const boardCenterY = boardHeight / 2
 const ctx = canvas.getContext('2d')
+
+let controllers = []
+const goalHeight = 100
+const goalWidth = 200
+const goalPosTop = boardWidth / 3.3
+let score = [];
+
 ctx.lineWidth = 2
+canvas.focus()
 
 const board = () => {
     ctx.beginPath()
     ctx.arc(boardWidth / 2, boardHeight / 2, boardWidth / 10, 0, 2 * Math.PI)
     ctx.moveTo(0, boardHeight / 2)
     ctx.lineTo(boardWidth, boardHeight / 2)
+    ctx.rect((boardWidth / 3.3), 0, goalWidth, goalHeight)
+    ctx.rect((boardWidth / 3.3), (boardHeight - goalHeight), goalWidth, goalHeight)
     ctx.stroke()
+}
+
+const moveController = (key) => {
+
+    // Up
+    if (key === 38 && controller.velocityY < controller.maxSpeed) {
+            controller.velocityY -= controller.acceleration;
+    }
+
+    // Down
+    if (key === 40 && controller.velocityY < controller.maxSpeed) {
+            controller.velocityY += controller.acceleration;
+    }
+
+    // Right
+    if (key === 39 && controller.velocityX < controller.maxSpeed) {
+            controller.velocityX += controller.acceleration;
+    }
+
+    // Left 
+    if (key === 37 && controller.acceleration < controller.maxSpeed) {
+            controller.velocityX -= controller.acceleration;
+    }
+
+}
+
+const rotate = (x, y, sin, cos, reverse) => {
+    return {
+            x: (reverse) ? (x * cos + y * sin) : (x * cos - y * sin),
+            y: (reverse) ? (y * cos - x * sin) : (y * cos + x * sin)
+    };
 }
 
 function Disc () {
@@ -51,13 +92,14 @@ function Disc () {
 
             }
         
-            if (controller.x > (boardCenterX - controller.radius) && controller.x < boardCenterX) {
-                    controller.velocityX = -3;
+            if (controller.y > (boardCenterY - controller.radius) && controller.y < boardCenterY) {
+                    controller.velocityY = -3;
             }
 
-            if (controllerTwo.x > boardCenterX && controllerTwo.x < (boardCenterX + (controllerTwo.radius / 2))) {
-                    controllerTwo.velocityX = +3;
+            if (controllerTwo.y > boardCenterY && controllerTwo.y < (boardCenterY + (controllerTwo.radius / 2))) {
+                    controllerTwo.velocityY = +3;
             } 
+
     },
 
     this.keepPuckInBoard = () => {
@@ -71,7 +113,7 @@ function Disc () {
                     }
 
                     if (this.y > (goalPosTop + puck.radius) && this.y < (goalPosTop + goalHeight) - puck.radius) {
-                            puck = new Disc(boardCenterX, boardCenterY);
+                            puck = new Disc();
                     } else {
                             this.velocityX = -this.velocityX;
                     }
@@ -145,14 +187,14 @@ function Disc () {
     }
 
     this.draw = () => {
-            boardContext.shadowColor = 'rgba(50, 50, 50, 0.25)';
-            boardContext.shadowOffsetX = 0;
-            boardContext.shadowOffsetY = 3;
-            boardContext.shadowBlur = 6;
-            boardContext.beginPath();
-            boardContext.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false);
-            boardContext.fillStyle = this.color;
-            boardContext.fill();
+            ctx.shadowColor = 'rgba(50, 50, 50, 0.25)';
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 3;
+            ctx.shadowBlur = 6;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false);
+            ctx.fillStyle = this.color;
+            ctx.fill();
 
     }
 
@@ -193,51 +235,56 @@ function Disc () {
 
 };
 
+document.addEventListener('keydown', event => {
+    moveController(event.keyCode)
+})
 
 const puck = new Disc() 
 
-console.log(puck)
-// class Player {
-//     constructor() {
-//         this.x = undefined
-//         this.y = undefined
-//         this.prevX = undefined
-//         this.prevY = undefined
-//         this.dx = undefined
-//         this.dy = undefined
-//     }
+const updateGame = () => {
 
-//     draw(){
-//         ctx.beginPath()
-//         ctx.arc(this.x, this.y, boardWidth * .05, 0, 2 * Math.PI)
-//         ctx.fillStyle = "red"
-//         ctx.fill()
-//         ctx.stroke()
-//     }
+    ctx.clearRect(0, 0, boardWidth, boardHeight);
 
-//     update() {
-//         this.dx = this.x - this.prevX
-//         this.dy = this.y - this.prevY
-//         this.prevX = this.x
-//         this.prevY = this.y
-//     }
-// }
+    board() 
 
-// const player = new Player()
+    puck.draw();
+    puck.move();
+    puck.discCollision();
+    puck.keepPuckInBoard();
 
-// window.addEventListener('mousemove', event => {
-//     player.x = event.x - window.innerWidth / 2 + w / 2
-//     player.y = event.y - h * .05
-// })
+    controller.draw();
+    controller.move();
+    controller.keepControllerInBoard();
+    controllerTwo.draw();
+    controllerTwo.computerPlayer();
+    controllerTwo.move();
+    controllerTwo.keepControllerInBoard();
 
-// const animate = () => {
-//     ctx.clearRect(0, 0, boardWidth, h)
-//     board()
-//     player.draw()
-//     requestAnimationFrame(animate)
-// }
+    requestAnimationFrame(updateGame);
+}
 
-// animate()
+let controller = new Disc()
+controller.color = "blue"
+controller.radius += 10
+controller.acceleration = 5
+// controller.startingPosX = 125
+controller.startingPosX = boardCenterX
+controller.startingPosY = 50
+controller.mass = 50
+controller.x = controller.startingPosX;
+controller.y = controller.startingPosY
 
-board()
+let controllerTwo = new Disc();
+controllerTwo.color = "red"
+controllerTwo.radius += 10
+controllerTwo.acceleration = 5
+controllerTwo.startingPosX = boardCenterX
+controllerTwo.startingPosY = (boardHeight - 50)
+controllerTwo.mass = 50
+controllerTwo.x = controllerTwo.startingPosX
+controllerTwo.y = controllerTwo.startingPosY
 
+
+controllers.push(controller, controllerTwo);
+
+updateGame();
