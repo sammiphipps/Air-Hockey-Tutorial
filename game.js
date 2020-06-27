@@ -127,7 +127,7 @@ function Disc () {
 
                 if (this.x > (goalPosTopX + puck.radius) && this.x < (goalPosTopX + goalWidth) - puck.radius){
                         puck = new Disc()
-                        
+
                 } else {
                         this.velocityY = -this.velocityY
                 }
@@ -242,7 +242,7 @@ document.addEventListener('keydown', event => {
     moveController(event.keyCode)
 })
 
-const puck = new Disc() 
+let puck = new Disc() 
 
 const updateGame = () => {
 
