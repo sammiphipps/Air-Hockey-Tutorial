@@ -8,7 +8,8 @@ const ctx = canvas.getContext('2d')
 let controllers = []
 const goalHeight = 100
 const goalWidth = 200
-const goalPosTop = boardWidth / 3.3
+// const goalPosTop = (boardHeight - goalHeight) / 2
+const goalPosTopX = boardWidth / 3.3
 let score = [];
 
 ctx.lineWidth = 2
@@ -112,22 +113,24 @@ function Disc () {
                             this.x = this.radius;
                     }
 
-                    if (this.y > (goalPosTop + puck.radius) && this.y < (goalPosTop + goalHeight) - puck.radius) {
-                            puck = new Disc();
-                    } else {
-                            this.velocityX = -this.velocityX;
-                    }
+                    this.velocityX = -this.velocityX;
+
             }
 
             if (this.y > (boardHeight - this.radius) || this.y < this.radius) {
 
-                    if (this.y > (boardHeight - this.radius)) {
-                            this.y = boardHeight - this.radius;
-                    } else {
-                            this.y = this.radius;
-                    }
-                    
-                    this.velocityY = -this.velocityY;
+                if (this.y > (boardHeight - this.radius)) {
+                        this.y = boardHeight - this.radius;
+                } else {
+                        this.y = this.radius;
+                }
+
+                if (this.x > (goalPosTopX + puck.radius) && this.x < (goalPosTopX + goalWidth) - puck.radius){
+                        puck = new Disc()
+                        
+                } else {
+                        this.velocityY = -this.velocityY
+                }
             }
 
     }
@@ -267,7 +270,6 @@ let controller = new Disc()
 controller.color = "blue"
 controller.radius += 10
 controller.acceleration = 5
-// controller.startingPosX = 125
 controller.startingPosX = boardCenterX
 controller.startingPosY = 50
 controller.mass = 50
@@ -277,7 +279,7 @@ controller.y = controller.startingPosY
 let controllerTwo = new Disc();
 controllerTwo.color = "red"
 controllerTwo.radius += 10
-controllerTwo.acceleration = 5
+controllerTwo.acceleration = 0.2
 controllerTwo.startingPosX = boardCenterX
 controllerTwo.startingPosY = (boardHeight - 50)
 controllerTwo.mass = 50
