@@ -216,7 +216,7 @@ function Disc () {
                             controllerTwo.velocityX += controllerTwo.acceleration;
                     }
 
-                    if (puck.y < controllerTwo.y) {
+                    if ((puck.y + puck.radius) < controllerTwo.y) {
                             controllerTwo.velocityY -= controllerTwo.acceleration;
                     } else {
                             controllerTwo.velocityY += controllerTwo.acceleration;
@@ -233,7 +233,7 @@ function Disc () {
                     }
 
             }
-
+        
     }
 
 };
@@ -271,7 +271,7 @@ controller.color = "blue"
 controller.radius += 10
 controller.acceleration = 5
 controller.startingPosX = boardCenterX
-controller.startingPosY = 50
+controller.startingPosY = 200
 controller.mass = 50
 controller.x = controller.startingPosX;
 controller.y = controller.startingPosY
@@ -281,7 +281,7 @@ controllerTwo.color = "red"
 controllerTwo.radius += 10
 controllerTwo.acceleration = 0.2
 controllerTwo.startingPosX = boardCenterX
-controllerTwo.startingPosY = (boardHeight - 50)
+controllerTwo.startingPosY = (boardHeight - 200)
 controllerTwo.mass = 50
 controllerTwo.x = controllerTwo.startingPosX
 controllerTwo.y = controllerTwo.startingPosY
